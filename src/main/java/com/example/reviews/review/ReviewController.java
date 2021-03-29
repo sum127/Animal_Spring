@@ -300,25 +300,17 @@ public class ReviewController {
 	}
 
 	// 페이징하여 조회
-	@RequestMapping
-	(value="/reviews/paging-and-sort", method=RequestMethod.GET)
-	public Page<ReviewText> getFeedsPagingAndSort(
-	@RequestParam("page") int page, 
-	@RequestParam("size") int size) {
-		// �쟾泥� 紐⑸줉 議고쉶, �럹�씠吏�, id �뿭�젙�젹
-		
-		 
-		
+	@RequestMapping(value = "/reviews/paging-and-sort", method = RequestMethod.GET)
+	public Page<ReviewText> getFeedsPagingAndSort(@RequestParam("page") int page, @RequestParam("size") int size) {
+
 		Page<ReviewText> list = textRepo.findAll(PageRequest.of(page, size, Sort.by("id").descending()));
 		for (ReviewText reviewText : list) {
 			for (ReviewPicture file : reviewText.getFiles()) {
 				file.setDataUrl(apiConfig.getBasePath() + "/review-picture-file/" + file.getId());
 			}
 		}
-		
+
 		return list;
 	}
-	
-	
-	
+
 }
