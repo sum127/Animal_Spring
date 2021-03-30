@@ -34,11 +34,17 @@ public class Hospital {
 	// 데이터갱신일자
 	private String UPDATEDT;
 
+	private String X;
+
+	private String Y;
+
 	public Hospital(HospitalResponse.rows res) {
 		this.TRDSTATEGBN = res.getTRDSTATEGBN();
 		this.TRDSTATENM = res.getTRDSTATENM();
 		this.SITEWHLADDR = res.getSITEWHLADDR();
 		this.BPLCNM = res.getBPLCNM();
 		this.UPDATEDT = res.getUPDATEDT();
+		this.X = res.getX();
+		this.Y = res.getY();
 	}
 }

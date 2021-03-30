@@ -29,5 +29,9 @@ public class HospitalResponse {
 		private String BPLCNM;
 		// 데이터갱신일자
 		private String UPDATEDT;
+
+		private String X;
+
+		private String Y;
 	}
 }

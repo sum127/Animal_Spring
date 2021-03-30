@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class HospitalService {
 
 	private HospitalRepository repo;
 
+	@Autowired
 	public HospitalService(HospitalRepository repo) {
 		this.repo = repo;
 	}
@@ -32,7 +34,7 @@ public class HospitalService {
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://openapi.seoul.go.kr:8088/");
 		builder.append(serviceKey);
-		builder.append("/json/LOCALDATA_020301/1/5/");
+		builder.append("/json/LOCALDATA_020301/1/15/");
 
 		// string을 url로 생성
 		URL url = new URL(builder.toString());
@@ -50,10 +52,12 @@ public class HospitalService {
 		HospitalResponse response = new Gson().fromJson(data, HospitalResponse.class);
 
 		for (HospitalResponse.rows item : response.getLOCALDATA_020301().getRow()) {
+
+			// ?뷀떚?곕줈 蹂??
+			System.out.println("------------------------------------------------------------------------------");
 			Hospital hospital = new Hospital(item);
 			System.out.println(item);
 			System.out.println(hospital);
-			System.out.println("------------------------------------------------------------------------------");
 			String type = hospital.getSITEWHLADDR();
 			type = type.replace("[", "");
 			type = type.replace("]", "");
@@ -61,7 +65,10 @@ public class HospitalService {
 			hospital.setGuName(typeArray[1]);
 			System.out.println(hospital.getGuName());
 			System.out.println(hospital.getTRDSTATEGBN());
-			if (repo.findAll() == null) {
+			System.out.println(hospital.getBPLCNM());
+
+			Hospital savedAnimal = repo.findByBPLCNM(hospital.getBPLCNM());
+			if (savedAnimal == null) {
 				repo.save(hospital);
 			}
 
