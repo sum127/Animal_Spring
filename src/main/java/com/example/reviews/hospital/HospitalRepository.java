@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
 	Hospital findByBPLCNM(String BPLCNM);
+
+	Hospital findByTRDSTATEGBN(String TRDSTATEGBN);
 }

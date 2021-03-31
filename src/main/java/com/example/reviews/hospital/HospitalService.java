@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 public class HospitalService {
 
 	private String serviceKey = "6a516575656464643130346d53704943";
-
+	private String kakaoServieceKey = "df5fe9f1c9851a8a177782f650e29acf";
 	private HospitalRepository repo;
 
 	@Autowired
@@ -24,7 +24,7 @@ public class HospitalService {
 
 	// 매시 30분 되면 실행(cron= "0 30 0 0 0")
 	// 주기는 31분마다
-	@Scheduled(fixedRate = 1000 * 60 * 1)
+	@Scheduled(fixedRate = 1000 * 60 * 60 * 24)
 	public void requestHospital() throws IOException {
 		getHospital();
 	}
@@ -34,7 +34,7 @@ public class HospitalService {
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://openapi.seoul.go.kr:8088/");
 		builder.append(serviceKey);
-		builder.append("/json/LOCALDATA_020301/1/15/");
+		builder.append("/json/LOCALDATA_020301/1/130/");
 
 		// string을 url로 생성
 		URL url = new URL(builder.toString());
@@ -46,6 +46,7 @@ public class HospitalService {
 
 		// 응답의 한줄을 문자열로 읽음
 		String data = new String(result);
+		System.out.println("위에 data");
 		System.out.println(data);
 
 		// data 를 DustHourlyResponse형식으로 변환
@@ -53,23 +54,30 @@ public class HospitalService {
 
 		for (HospitalResponse.rows item : response.getLOCALDATA_020301().getRow()) {
 
-			// ?뷀떚?곕줈 蹂??
-			System.out.println("------------------------------------------------------------------------------");
 			Hospital hospital = new Hospital(item);
-			System.out.println(item);
-			System.out.println(hospital);
 			String type = hospital.getSITEWHLADDR();
 			type = type.replace("[", "");
 			type = type.replace("]", "");
 			String[] typeArray = type.split(" ");
 			hospital.setGuName(typeArray[1]);
-			System.out.println(hospital.getGuName());
-			System.out.println(hospital.getTRDSTATEGBN());
-			System.out.println(hospital.getBPLCNM());
 
-			Hospital savedAnimal = repo.findByBPLCNM(hospital.getBPLCNM());
-			if (savedAnimal == null) {
-				repo.save(hospital);
+			String type1 = hospital.getX();
+			String type2 = hospital.getY();
+			hospital.setX(type1.trim());
+			hospital.setY(type2.trim());
+
+			String a = hospital.getTRDSTATEGBN();
+			if (a.equals("01")) {
+
+				Hospital savedAnimal = repo.findByBPLCNM(hospital.getBPLCNM());
+				if (savedAnimal == null) {
+					if (hospital.getX() == null && hospital.getY() == null) {
+						repo.save(hospital);
+					} else {
+						getMap(hospital.getX(), hospital.getY(), hospital);
+					}
+
+				}
 			}
 
 		}
@@ -77,4 +85,28 @@ public class HospitalService {
 		// 엔티티에 인설트
 
 	}
+
+	private void getMap(String x, String y, Hospital hospital) throws IOException {
+		StringBuilder kakaoBuilder = new StringBuilder();
+		kakaoBuilder.append("https://dapi.kakao.com/v2/local/geo/transcoord.");
+		kakaoBuilder.append("json?input_coord=TM&output_coord=WGS84&");
+		kakaoBuilder.append("x=" + x + "&y=" + y);
+
+		URL url = new URL(kakaoBuilder.toString());
+		// url을 연결함
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.addRequestProperty("Authorization", "KakaoAK " + kakaoServieceKey);
+
+		byte[] result = connection.getInputStream().readAllBytes();
+
+		String data = new String(result);
+		KakaoResponse response = new Gson().fromJson(data, KakaoResponse.class);
+		for (KakaoResponse.documents item : response.getDocuments()) {
+
+			hospital.setAfterX(item.getX());
+			hospital.setAfterY(item.getY());
+			repo.save(hospital);
+		}
+	}
+
 }

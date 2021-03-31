@@ -1,5 +1,7 @@
 package com.example.reviews.hospital;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,6 +40,10 @@ public class Hospital {
 
 	private String Y;
 
+	private String afterX;
+
+	private String afterY;
+
 	public Hospital(HospitalResponse.rows res) {
 		this.TRDSTATEGBN = res.getTRDSTATEGBN();
 		this.TRDSTATENM = res.getTRDSTATENM();
@@ -47,4 +53,10 @@ public class Hospital {
 		this.X = res.getX();
 		this.Y = res.getY();
 	}
+
+	public Hospital(KakaoResponse.documents res) {
+		this.afterX = res.getX();
+		this.afterY = res.getY();
+	}
+
 }
