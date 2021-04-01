@@ -258,7 +258,7 @@ public class ReviewController {
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// (수정)
 
 	// 내용수정
-	@PutMapping(value = "/reviews/{id}")
+	@PatchMapping(value = "/reviews/{id}")
 
 	public ReviewText modifyReview(@PathVariable("id") long id, @RequestBody String content, HttpServletResponse res) {
 
