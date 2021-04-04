@@ -72,16 +72,16 @@ public class ReviewController {
 	}
 
 	// 해당 id 사진조회
-	@GetMapping(value = "/reviews/{id}/review-picture-file")
-	public List<ReviewPicture> getReviewPictures(@PathVariable("id") long id, HttpServletResponse res) {
-		if (textRepo.findById(id).orElse(null) == null) {
-			res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return null;
-		}
-		List<ReviewPicture> reviewPictures = pictureRepo.findByTextId(id);
-
-		return reviewPictures;
-	}
+//	@GetMapping(value = "/reviews/{id}/review-picture-file")
+//	public List<ReviewPicture> getReviewPictures(@PathVariable("id") long id, HttpServletResponse res) {
+//		if (textRepo.findById(id).orElse(null) == null) {
+//			res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//			return null;
+//		}
+//		List<ReviewPicture> reviewPictures = pictureRepo.findByTextId(id);
+//
+//		return reviewPictures;
+//	}
 
 	// 닉네임으로 조회
 	// http://localhost:8080/reviews/search/nickname?keyword=揶쏉옙
@@ -260,7 +260,7 @@ public class ReviewController {
 	// 내용수정
 	@PatchMapping(value = "/reviews/{id}")
 
-	public ReviewText modifyReview(@PathVariable("id") long id, @RequestBody String content, HttpServletResponse res) {
+	public ReviewText modifyReview(@PathVariable("id") long id, @RequestParam("content")String content, HttpServletResponse res) {
 
 		ReviewText reviewText = textRepo.findById(id).orElse(null);
 
@@ -277,10 +277,10 @@ public class ReviewController {
 	}
 
 	// 사진수정
-	@PutMapping(value = "/reviews/{id}/pictures")
+	@PatchMapping(value = "/reviews/{id}/pictures")
 
 	public ReviewText modifyReview(@PathVariable("id") long id, @RequestPart("data") MultipartFile file,
-			HttpServletResponse res) {
+			HttpServletResponse res) throws IOException {
 
 		List<ReviewPicture> reviewPictures = pictureRepo.findByTextId(id);
 		for (ReviewPicture reviewPicture : reviewPictures) {
@@ -290,27 +290,28 @@ public class ReviewController {
 				files.delete();
 			}
 		}
+		
+		
+		if (textRepo.findById(id).orElse(null) == null) {
+			res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
+		}
+
+		if (!Files.exists(FILE_PATH)) {
+			Files.createDirectories(FILE_PATH);
+		}
+		
+		FileCopyUtils.copy(file.getBytes(), new File(FILE_PATH.resolve(file.getOriginalFilename()).toString()));
 
 		ReviewPicture reviewPicture = ReviewPicture.builder().textId(id).fileName(file.getOriginalFilename())
 				.contentType(file.getContentType()).build();
 
+		
 		pictureRepo.save(reviewPicture);
 
 		return null;
 	}
 
-	// 페이징하여 조회
-	@RequestMapping(value = "/reviews/paging-and-sort", method = RequestMethod.GET)
-	public Page<ReviewText> getFeedsPagingAndSort(@RequestParam("page") int page, @RequestParam("size") int size) {
-
-		Page<ReviewText> list = textRepo.findAll(PageRequest.of(page, size, Sort.by("id").descending()));
-		for (ReviewText reviewText : list) {
-			for (ReviewPicture file : reviewText.getFiles()) {
-				file.setDataUrl(apiConfig.getBasePath() + "/review-picture-file/" + file.getId());
-			}
-		}
-
-		return list;
-	}
+	
 
 }

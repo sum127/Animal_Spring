@@ -28,10 +28,6 @@ public class HospitalController {
 
 	}
 
-	@GetMapping(value = "/hospital/paging")
-	public List<Hospital> getHospital(@RequestParam("page") int page, @RequestParam("size") int size) {
-		// �쟾泥� 紐⑸줉 議고쉶, �럹�씠吏�
-		return hospitalRepo.findAll(PageRequest.of(page, size)).toList();
-	}
+	
 
 }
