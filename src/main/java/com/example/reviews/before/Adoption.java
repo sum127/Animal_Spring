@@ -42,5 +42,7 @@ public class Adoption {
 	private String houseType;
 	private String reason;
 	private String status;
+	
+	
 
 }

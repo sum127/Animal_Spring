@@ -24,6 +24,7 @@ public class HospitalController {
 	public List<Hospital> getReviews() {
 		List<Hospital> list = hospitalRepo.findAll(Sort.by("id").descending());
 
+		
 		return list;
 
 	}

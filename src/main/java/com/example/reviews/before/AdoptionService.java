@@ -33,6 +33,7 @@ public class AdoptionService {
 
 	public void receiveOrder3(Adoption request) {
 		System.out.println(request);
+		if(request.getStatus().equals("입양완료")) {
 		Adoption info = Adoption.builder().adoptionId(request.getAdoptionId()).requestNo(request.getRequestNo())
 				.animalId(request.getAnimalId()).animalImg(request.getAnimalImg()).noticeNo(request.getNoticeNo())
 				.name(request.getName()).mobile(request.getMobile()).email(request.getEmail())
@@ -40,8 +41,9 @@ public class AdoptionService {
 				.familyAgreed(request.getFamilyAgreed()).petAtHome(request.getPetAtHome())
 				.petDetails(request.getPetDetails()).houseType(request.getHouseType()).reason(request.getReason())
 				.status(request.getStatus()).build();
-
+		
 		repo.save(info);
+		}
 	}
 
 }
