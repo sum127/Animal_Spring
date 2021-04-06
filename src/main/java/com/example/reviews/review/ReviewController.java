@@ -6,14 +6,13 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -144,10 +140,10 @@ public class ReviewController {
 
 	// 비밀번호 닉네임 중복체크
 	@GetMapping(value = "/reviews/{nickname}/check")
-	public boolean getPasswordCheck(@PathVariable("nickname") String nickname,
-			@RequestParam("keyword") String keyword) {
+	public boolean getPasswordCheck(@PathVariable("nickname") String nickname, @RequestParam("keyword") String keyword)
+			throws NoSuchAlgorithmException {
 
-		List<ReviewText> pass = textRepo.findByPassword(keyword);
+		List<ReviewText> pass = textRepo.findByPassword(sha256(keyword));
 		List<ReviewText> name = textRepo.findByNickname(nickname);
 		if (name.size() > 0) {
 			if (pass.size() > 0) {
@@ -163,10 +159,30 @@ public class ReviewController {
 
 	// 내용추가
 	@PostMapping(value = "/reviews")
-	public ReviewText addReviews(@RequestBody ReviewText reviewText) {
+	public ReviewText addReviews(@RequestBody ReviewText reviewText) throws NoSuchAlgorithmException {
+
+		reviewText.setPassword(sha256(reviewText.getPassword()));
 		textRepo.save(reviewText);
 
 		return reviewText;
+	}
+
+	// 암호화
+	public static String sha256(String msg) throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		md.update(msg.getBytes());
+
+		return bytesToHex(md.digest());
+	}
+
+	public static String bytesToHex(byte[] bytes) {
+		StringBuilder builder = new StringBuilder();
+		for (byte b : bytes) {
+			builder.append(String.format("%02x", b));
+		}
+
+		return builder.toString();
+
 	}
 
 	// 사진추가
@@ -260,7 +276,8 @@ public class ReviewController {
 	// 내용수정
 	@PatchMapping(value = "/reviews/{id}")
 
-	public ReviewText modifyReview(@PathVariable("id") long id, @RequestParam("content")String content, HttpServletResponse res) {
+	public ReviewText modifyReview(@PathVariable("id") long id, @RequestParam("content") String content,
+			HttpServletResponse res) {
 
 		ReviewText reviewText = textRepo.findById(id).orElse(null);
 
@@ -279,10 +296,12 @@ public class ReviewController {
 	// 사진수정
 	@PatchMapping(value = "/reviews/{id}/pictures")
 
-	public ReviewText modifyReview(@PathVariable("id") long id, @RequestPart("data") MultipartFile file,
+	public ReviewText modifyPic(@PathVariable("id") long id, @RequestPart("data") MultipartFile file,
 			HttpServletResponse res) throws IOException {
 
 		List<ReviewPicture> reviewPictures = pictureRepo.findByTextId(id);
+
+		System.out.println(reviewPictures);
 		for (ReviewPicture reviewPicture : reviewPictures) {
 			pictureRepo.delete(reviewPicture);
 			File files = new File(reviewPicture.getFileName());
@@ -290,28 +309,19 @@ public class ReviewController {
 				files.delete();
 			}
 		}
-		
-		
-		if (textRepo.findById(id).orElse(null) == null) {
-			res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return null;
-		}
 
 		if (!Files.exists(FILE_PATH)) {
 			Files.createDirectories(FILE_PATH);
 		}
-		
+
 		FileCopyUtils.copy(file.getBytes(), new File(FILE_PATH.resolve(file.getOriginalFilename()).toString()));
 
 		ReviewPicture reviewPicture = ReviewPicture.builder().textId(id).fileName(file.getOriginalFilename())
 				.contentType(file.getContentType()).build();
 
-		
 		pictureRepo.save(reviewPicture);
 
 		return null;
 	}
-
-	
 
 }
