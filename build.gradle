@@ -18,6 +18,9 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+    set('springCloudVersion', "2020.0.1")
+}
 dependencies {
 
 
@@ -38,4 +41,10 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+dependencyManagement {
+   imports {
+      mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+   }
 }

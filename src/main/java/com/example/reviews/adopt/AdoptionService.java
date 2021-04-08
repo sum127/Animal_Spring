@@ -1,4 +1,4 @@
-package com.example.reviews.before;
+package com.example.reviews.adopt;
 
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;

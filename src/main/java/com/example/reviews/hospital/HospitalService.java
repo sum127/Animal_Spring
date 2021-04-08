@@ -22,8 +22,7 @@ public class HospitalService {
 		this.repo = repo;
 	}
 
-	// 매시 30분 되면 실행(cron= "0 30 0 0 0")
-	// 주기는 31분마다
+	// 주기는 24시간마다
 	@Scheduled(fixedRate = 1000 * 60 * 60 * 24)
 	public void requestHospital() throws IOException {
 		getHospital();

@@ -1,4 +1,4 @@
-package com.example.reviews.before;
+package com.example.reviews.adopt;
 
 import java.util.List;
 
