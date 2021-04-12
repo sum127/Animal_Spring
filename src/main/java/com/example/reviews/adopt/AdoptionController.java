@@ -17,29 +17,11 @@ public class AdoptionController {
 
 	private AdoptionRepository repo;
 
-	// 사진 저장할경로
-//	private final Path FILE_PATH = Paths.get("review_picture_file");
-
-//	@Autowired
-//	private ApiConfiguration apiConfig;
-
 	@Autowired
 	public AdoptionController(AdoptionRepository repo) {
 		this.repo = repo;
 	}
 
-	// 내용추가
-	@GetMapping(value = "/adoption")
-	public List<Adoption> adoption()  {
-		List<Adoption> list = repo.findAll(Sort.by("id").descending());
-
-		return list;
-		
-	}
-	//글저장시 noticeNo에 해당reviewtext아이디 저장되게하고
-	//noticeNo로 찾는컨트롤러설정
-	// 뷰에서 그걸로 찾아서 이미지추가해주기
-	
 	@GetMapping(value = "/adoption/keyword")
 	public List<Adoption> getNickname(@RequestParam("name") String name,
 			@RequestParam("mobile") String mobile) {

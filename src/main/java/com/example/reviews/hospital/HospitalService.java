@@ -75,14 +75,9 @@ public class HospitalService {
 					} else {
 						getMap(hospital.getX(), hospital.getY(), hospital);
 					}
-
 				}
 			}
-
 		}
-
-		// 엔티티에 인설트
-
 	}
 
 	private void getMap(String x, String y, Hospital hospital) throws IOException {

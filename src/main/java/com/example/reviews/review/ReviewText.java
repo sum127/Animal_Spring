@@ -29,9 +29,6 @@ public class ReviewText {
 	private String password; // 비밀번호
 	private String content; // 내용
 
-	private String kind;
-	private String sexCd;
-	private String age;
 
 	@OneToMany
 	@JoinColumn(name = "textId")

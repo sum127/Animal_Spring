@@ -25,22 +25,10 @@ public class Adoption {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private long adoptionId;
-	private String requestNo;
 	private long animalId;
-	private String animalImg;
-	private String noticeNo;
 	private String name;
 	private String mobile;
-	private String email;
-	private String gender;
-	private String address;
-	private String job;
-	private String familyMember;
-	private String familyAgreed;
-	private String petAtHome;
-	private String petDetails;
-	private String houseType;
-	private String reason;
+	private String animalImg;
 	private String status;
 	
 	

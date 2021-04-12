@@ -27,5 +27,4 @@ public class ReviewPicture {
 
 	@Transient
 	private String dataUrl;
-	private String beforeImg;
 }

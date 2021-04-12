@@ -17,15 +17,6 @@ public class AdoptionService {
 		this.repo = repo;
 	}
 
-//	@RabbitListener(queues = "adoption.status")
-//
-//	public void receiveOrder(Animal animal) {
-//		System.out.println(animal);
-//		AdoptionInfo adoption = AdoptionInfo.builder().age(animal.getAge()).sexCd(animal.getSexCd()).kind(animal.getKind())
-//				.weight(animal.getWeight()).build();
-//
-//		adoptionRepo.save(adoption);
-//	}
 
 	@RabbitListener(bindings = {
 			@QueueBinding(exchange = @Exchange(name = "amq.topic", type = "topic"), value = @Queue(value = "get.adoption"), key = {
@@ -34,13 +25,14 @@ public class AdoptionService {
 	public void receiveOrder3(Adoption request) {
 		System.out.println(request);
 		if(request.getStatus().equals("입양완료")) {
-		Adoption info = Adoption.builder().adoptionId(request.getAdoptionId()).requestNo(request.getRequestNo())
-				.animalId(request.getAnimalId()).animalImg(request.getAnimalImg()).noticeNo(request.getNoticeNo())
-				.name(request.getName()).mobile(request.getMobile()).email(request.getEmail())
-				.gender(request.getGender()).address(request.getAddress()).job(request.getJob())
-				.familyAgreed(request.getFamilyAgreed()).petAtHome(request.getPetAtHome())
-				.petDetails(request.getPetDetails()).houseType(request.getHouseType()).reason(request.getReason())
-				.status(request.getStatus()).build();
+		Adoption info = Adoption.builder()
+				.adoptionId(request.getAdoptionId())
+				.animalId(request.getAnimalId())
+				.name(request.getName())
+				.mobile(request.getMobile())
+				.animalImg(request.getAnimalImg())
+				.status(request.getStatus())
+				.build();
 		
 		repo.save(info);
 		}
