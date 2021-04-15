@@ -51,7 +51,7 @@ eureka:
       default-zone: http://13.124.190.225:8761/eureka/
   instance:
     # 본인 서비스의 ec2 주소 서비스가 실행되는 ec2주소
-    hostname: ec2-13-124-221-31.ap-northeast-2.compute.amazonaws.com
+    hostname: 13.124.221.31
     
 api:
   base-path: http://ec2-13-124-221-31.ap-northeast-2.compute.amazonaws.com:8080
