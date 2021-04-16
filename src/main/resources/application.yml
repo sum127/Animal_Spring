@@ -54,4 +54,4 @@ eureka:
     hostname: 13.124.221.31
     
 api:
-  base-path: http://ec2-13-124-221-31.ap-northeast-2.compute.amazonaws.com:8080
+  base-path: https://cq20nytgag.execute-api.ap-northeast-2.amazonaws.com/v1/reviews
